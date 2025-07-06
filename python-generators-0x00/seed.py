@@ -10,7 +10,7 @@ def connect_db():
         return mysql.connector.connect(
             host="localhost",
             user="root",
-            password="your_password"  # 🔁 Replace with your real MySQL root password
+            password=""  # 🔁 Replace with your real MySQL root password
         )
     except mysql.connector.Error as err:
         print(f"Error: {err}")
@@ -33,7 +33,7 @@ def connect_to_prodev():
         return mysql.connector.connect(
             host="localhost",
             user="root",
-            password="your_password",  # 🔁 Replace this too
+            password="",  # 🔁 Replace this too as necessary
             database="ALX_prodev"
         )
     except mysql.connector.Error as err:
@@ -59,18 +59,13 @@ def create_table(connection):
     finally:
         cursor.close()
 
-def insert_data(connection, csv_file):
-    """Inserts data from CSV file if not already in table"""
-    cursor = connection.cursor()
+def insert_data(connection, filename):
     try:
-        with open(csv_file, newline='') as file:
-            reader = csv.DictReader(file)
+        cursor = connection.cursor()
+        with open(filename, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
             for row in reader:
-                user_id = row['user_id']
-                # Check if user_id already exists
-                cursor.execute("SELECT user_id FROM user_data WHERE user_id = %s", (user_id,))
-                if cursor.fetchone():
-                    continue  # Skip duplicates
+                user_id = str(uuid.uuid4())  # generate a UUID
                 cursor.execute("""
                     INSERT INTO user_data (user_id, name, email, age)
                     VALUES (%s, %s, %s, %s)
@@ -81,9 +76,8 @@ def insert_data(connection, csv_file):
                     row['age']
                 ))
         connection.commit()
-        print("Data inserted successfully (if not already present)")
+        cursor.close()
+        print("Data inserted successfully")
     except Exception as e:
         print(f"Failed to insert data: {e}")
-    finally:
-        cursor.close()
 
