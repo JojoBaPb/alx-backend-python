@@ -15,7 +15,7 @@ def stream_users_in_batches(batch_size):
         if not rows:
             break
         for row in rows:
-            yield row  # <-- this line is crucial for the checker
+            yield row
 
     cursor.close()
     connection.close()
