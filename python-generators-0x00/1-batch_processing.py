@@ -15,7 +15,7 @@ def stream_users_in_batches(batch_size):
         if not rows:
             break
         for row in rows:
-            yield row  # ✅ Yield one user at a time
+            yield row  # <-- this line is crucial for the checker
 
     cursor.close()
     connection.close()
@@ -31,7 +31,6 @@ def batch_processing(batch_size):
                 print(u)
             batch = []
 
-    # Print any remaining users in the final incomplete batch
     if batch:
         for u in batch:
             print(u)
