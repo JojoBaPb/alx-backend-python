@@ -2,6 +2,14 @@
 """Module for accessing values in nested maps."""
 from typing import Any, Dict, Tuple
 
+"""Module for fetching JSON data from a URL"""
+import requests
+
+
+def get_json(url):
+    """Fetches JSON response from a URL"""
+    response = requests.get(url)
+    return response.json()
 
 def access_nested_map(nested_map: Dict, path: Tuple[Any]) -> Any:
     """
