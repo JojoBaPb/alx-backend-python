@@ -9,6 +9,11 @@ from utils import access_nested_map
 from unittest.mock import patch, Mock
 from utils import get_json
 
+"""Unit tests for utils.memoize decorator"""
+import unittest
+from unittest.mock import patch
+from utils import memoize
+
 class TestGetJson(unittest.TestCase):
     """Test the get_json function"""
 
@@ -35,7 +40,7 @@ class TestAccessNestedMap(unittest.TestCase):
 
     @parameterized.expand([
         ({"a": 1}, ("a",), 1),
-        ({"a": {"b": 2}}, ("a",), {"b": 2}),
+        ({"a": {"b": 2}},i ("a",), {"b": 2}),
         ({"a": {"b": 2}}, ("a", "b"), 2),
     ])
     def test_access_nested_map(self, nested_map, path, expected):
@@ -51,3 +56,33 @@ class TestAccessNestedMap(unittest.TestCase):
         with self.assertRaises(KeyError):
             access_nested_map(nested_map, path)
 
+            class TestClass:
+    """A dummy class for testing the memoize decorator"""
+
+    def __init__(self):
+        self.call_count = 0
+
+    @memoize
+    def a_method(self):
+        """Method to be memoized"""
+        self.call_count += 1
+        return 42
+
+
+class TestMemoize(unittest.TestCase):
+    """Tests for the memoize decorator"""
+
+    def test_memoize(self):
+        """Ensure memoization caches result after first call"""
+        test_obj = TestClass()
+
+        # First call should compute the result
+        result1 = test_obj.a_method()
+        self.assertEqual(result1, 42)
+
+        # Second call should use the cached result
+        result2 = test_obj.a_method()
+        self.assertEqual(result2, 42)
+
+        # Confirm the method was only called once
+        self.assertEqual(test_obj.call_count, 1)

@@ -5,6 +5,9 @@ from typing import Any, Dict, Tuple
 """Module for fetching JSON data from a URL"""
 import requests
 
+"""Utilities for testing memoization."""
+import requests
+from functools import wraps
 
 def get_json(url):
     """Fetches JSON response from a URL"""
@@ -29,3 +32,13 @@ def access_nested_map(nested_map: Dict, path: Tuple[Any]) -> Any:
         nested_map = nested_map[key]
     return nested_map
 
+def memoize(method):
+    """Decorator that caches method results"""
+    attr_name = "_{}".format(method.__name__)
+
+    @wraps(method)
+    def wrapper(self):
+        if not hasattr(self, attr_name):
+            setattr(self, attr_name, method(self))
+        return getattr(self, attr_name)
+    return wrapper
