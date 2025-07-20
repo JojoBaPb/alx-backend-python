@@ -17,7 +17,7 @@ from utils import memoize
 class TestGetJson(unittest.TestCase):
     """Test the get_json function"""
 
-    @patch("utils.requests.get")
+    ("utils.requests.get")
     def test_get_json(self, mock_get):
         """Test that get_json returns expected JSON payload"""
         test_url = "http://example.com"
@@ -62,7 +62,7 @@ class TestAccessNestedMap(unittest.TestCase):
     def __init__(self):
         self.call_count = 0
 
-    @memoize
+   
     def a_method(self):
         """Method to be memoized"""
         self.call_count += 1
