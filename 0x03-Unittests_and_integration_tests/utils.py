@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
-"""Module for accessing values in nested maps."""
+"""A set of utility functions for accessing nested maps and memoization."""
 from typing import Any, Dict, Tuple
-
-"""Module for fetching JSON data from a URL"""
-"""Utilities for testing memoization."""
-import requests
 from functools import wraps
 
-def get_json(url):
-    """Fetches JSON response from a URL"""
-    response = requests.get(url)
-    return response.json()
 
 def access_nested_map(nested_map: Dict, path: Tuple[Any]) -> Any:
     """
@@ -30,8 +22,9 @@ def access_nested_map(nested_map: Dict, path: Tuple[Any]) -> Any:
         nested_map = nested_map[key]
     return nested_map
 
+
 def memoize(method):
-    """Decorator that caches method results"""
+    """Decorator that caches method results."""
     attr_name = "_{}".format(method.__name__)
 
     @wraps(method)
@@ -39,5 +32,5 @@ def memoize(method):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, method(self))
         return getattr(self, attr_name)
-    
     return wrapper
+
