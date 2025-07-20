@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-"""A set of utility functions for accessing nested maps and memoization."""
-from typing import Any, Dict, Tuple
+"""
+Utils module with access_nested_map and memoize functions.
+"""
+
 from functools import wraps
+from typing import Any, Dict, Mapping, Sequence
 
 
-def access_nested_map(nested_map: Dict, path: Tuple[Any]) -> Any:
+def access_nested_map(nested_map: Mapping, path: Sequence) -> Any:
     """
-    Access a value in a nested dictionary via a path of keys.
+    Access a nested map with a sequence of keys.
 
     Args:
-        nested_map: A dictionary potentially containing other dictionaries.
-        path: A tuple of keys that represents the access path.
+        nested_map (dict): The dictionary to traverse.
+        path (sequence): A sequence of keys indicating the path.
 
     Returns:
-        The value at the end of the path.
+        The value located at the end of the path.
 
     Raises:
         KeyError: If any key in the path is missing.
@@ -24,7 +27,15 @@ def access_nested_map(nested_map: Dict, path: Tuple[Any]) -> Any:
 
 
 def memoize(method):
-    """Decorator that caches method results."""
+    """
+    Decorator that caches method results.
+
+    Args:
+        method: Method to be memoized.
+
+    Returns:
+        Wrapper function with caching.
+    """
     attr_name = "_{}".format(method.__name__)
 
     @wraps(method)
@@ -32,4 +43,6 @@ def memoize(method):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, method(self))
         return getattr(self, attr_name)
+
     return wrapper
+
