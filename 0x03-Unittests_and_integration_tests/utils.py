@@ -3,8 +3,6 @@
 from typing import Any, Dict, Tuple
 
 """Module for fetching JSON data from a URL"""
-import requests
-
 """Utilities for testing memoization."""
 import requests
 from functools import wraps
@@ -41,4 +39,5 @@ def memoize(method):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, method(self))
         return getattr(self, attr_name)
+    
     return wrapper
