@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qzgjm_(l!sjl7w=zt=6c)6mf^y0q2xhgu)1dli30&s2(l04ce('
+SECRET_KEY = 'django-insecure-v)y&qr%zr9*&z_jgi7r#abrojbx4xuk5b1g)#4p3#b-jg$4flb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -62,6 +62,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ],
 }
+
 
 ROOT_URLCONF = 'messaging_app.urls'
 
