@@ -2,9 +2,47 @@
 """Unit and integration tests for GithubOrgClient.org"""
 import unittest
 from unittest.mock import patch
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 from typing import Dict
+from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
+
+
+@parameterized_class([
+    {"org_payload": org_payload, "repos_payload": repos_payload, "expected_repos": expected_repos, "apache2_repos": apache2_repos}
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Test class for integration tests with external API calls"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up mock patchers for external requests"""
+        cls.get_patcher = patch('client.requests.get')
+        cls.mock_get = cls.get_patcher.start()
+
+        # Mock the requests.get response
+        cls.mock_get.side_effect = lambda url: {
+            "https://api.github.com/orgs/google": cls.org_payload,
+            "https://api.github.com/orgs/google/repos": cls.repos_payload,
+            "https://api.github.com/orgs/facebook": cls.org_payload,
+            "https://api.github.com/orgs/facebook/repos": cls.repos_payload,
+        }.get(url)
+
+    @classmethod
+    def tearDownClass(cls):
+        """Stop the mock patchers"""
+        cls.get_patcher.stop()
+
+    @parameterized.expand([
+        ("google", "repos_url"),
+        ("facebook", "repos_url")
+    ])
+    def test_integration(self, org, repos_url):
+        """Test integration of public_repos method"""
+        self.mock_get.return_value.json.return_value = {"repos_url": repos_url}
+
+        client = GithubOrgClient(org)
+        self.assertEqual(client._public_repos_url, repos_url)
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -52,32 +90,6 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test has_license method with different inputs"""
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected_result)
-
-
-class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Test class for integration tests with external API calls"""
-
-    @classmethod
-    def setUpClass(cls):
-        """Set up mock patchers for external requests"""
-        cls.get_patcher = patch('client.requests.get')
-        cls.mock_get = cls.get_patcher.start()
-
-    @classmethod
-    def tearDownClass(cls):
-        """Stop the mock patchers"""
-        cls.get_patcher.stop()
-
-    @parameterized.expand([
-        ("google", "repos_url"),
-        ("facebook", "repos_url")
-    ])
-    def test_integration(self, org, repos_url):
-        """Test integration of public_repos method"""
-        self.mock_get.return_value.json.return_value = {"repos_url": repos_url}
-
-        client = GithubOrgClient(org)
-        self.assertEqual(client._public_repos_url, repos_url)
 
 
 if __name__ == '__main__':
