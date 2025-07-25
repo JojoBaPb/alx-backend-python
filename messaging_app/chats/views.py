@@ -10,11 +10,19 @@ from .models import Message, Conversation
 from .serializers import MessageSerializer
 from .permissions import IsParticipantOfConversation
 
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import MessageFilter
+from .pagination import CustomPagination
+
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
 
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MessageFilter
+    pagination_class = CustomPagination
+    
     def get_queryset(self):
         # Only show messages for conversations the user is a participant in
         conversation_id = self.request.query_params.get('conversation_id')
