@@ -1,18 +1,65 @@
 from django.shortcuts import render
-
-# Create your views here.
-
-from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
-from .models import Message, Conversation
-from .serializers import MessageSerializer
 from .permissions import IsParticipantOfConversation
-
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import MessageFilter
 from .pagination import CustomPagination
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from .models import Conversation, Message, User
+from .serializers import ConversationSerializer, MessageSerializer
+from rest_framework.decorators import action
+
+
+class ConversationViewSet(viewsets.ModelViewSet):
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        # Get participants from request data (expects list of user_ids)
+        participant_ids = request.data.get("participants", [])
+        if not participant_ids or len(participant_ids) < 2:
+            return Response({"error": "At least two participants are required."}, status=400)
+
+        participants = User.objects.filter(user_id__in=participant_ids)
+        if participants.count() < 2:
+            return Response({"error": "Invalid participant user IDs."}, status=400)
+
+        conversation = Conversation.objects.create()
+        conversation.participants.set(participants)
+        serializer = self.get_serializer(conversation)
+        return Response(serializer.data, status=201)
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        sender_id = request.data.get("sender_id")
+        conversation_id = request.data.get("conversation_id")
+        message_body = request.data.get("message_body")
+
+        if not all([sender_id, conversation_id, message_body]):
+            return Response({"error": "sender_id, conversation_id, and message_body are required."}, status=400)
+
+        try:
+            sender = User.objects.get(user_id=sender_id)
+            conversation = Conversation.objects.get(conversation_id=conversation_id)
+        except (User.DoesNotExist, Conversation.DoesNotExist):
+            return Response({"error": "Invalid sender or conversation ID."}, status=404)
+
+        message = Message.objects.create(
+            sender=sender,
+            conversation=conversation,
+            message_body=message_body
+        )
+        serializer = self.get_serializer(message)
+        return Response(serializer.data, status=201)
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
