@@ -3,7 +3,7 @@ from django.http import HttpResponseForbidden
 from datetime import datetime
 from django.http import JsonResponse
 
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
