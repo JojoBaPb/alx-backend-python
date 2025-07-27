@@ -1,7 +1,35 @@
 import logging
 from django.http import HttpResponseForbidden
 from datetime import datetime
+from django.http import JsonResponse
 
+class OffensiveWordsMiddleware:
+    OFFENSIVE_WORDS = ['offensive', 'badword', 'curse']
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        data_sources = []
+
+        # Collect query params
+        if request.GET:
+            data_sources.append(request.GET)
+
+        # Collect POST data
+        if request.method == "POST":
+            data_sources.append(request.POST)
+
+        for data in data_sources:
+            for key, value in data.items():
+                for word in self.OFFENSIVE_WORDS:
+                    if word.lower() in value.lower():
+                        return JsonResponse(
+                            {"error": "Offensive language is not allowed."},
+                            status=400
+                        )
+
+        return self.get_response(request)
 class RequestLoggingMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
