@@ -3,7 +3,7 @@ from django.http import HttpResponseForbidden
 from datetime import datetime
 from django.http import JsonResponse
 
-class OffensiveWordsMiddleware:
+class OffensiveLanguageMiddleware:
     OFFENSIVE_WORDS = ['offensive', 'badword', 'curse']
 
     def __init__(self, get_response):
