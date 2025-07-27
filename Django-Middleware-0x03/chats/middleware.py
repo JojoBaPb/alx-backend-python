@@ -3,6 +3,24 @@ from django.http import HttpResponseForbidden
 from datetime import datetime
 from django.http import JsonResponse
 
+class RolePermissionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Only enforce for authenticated users with roles
+        user = getattr(request, 'user', None)
+        if user and user.is_authenticated:
+            role = getattr(user, 'role', None)
+
+            if role not in ['admin', 'moderator']:
+                return JsonResponse(
+                    {"error": "You do not have permission to perform this action."},
+                    status=403
+                )
+
+        return self.get_response(request)
+
 class OffensiveLanguageMiddleware:
     OFFENSIVE_WORDS = ['offensive', 'badword', 'curse']
 
