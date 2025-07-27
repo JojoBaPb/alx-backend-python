@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'chats.middleware.RequestLoggingMiddleware',
     'chats.middleware.AccessRestrictionMiddleware',
     'chats.middleware.RestrictAccessByTimeMiddleware',
-   'chats.middleware.OffensiveWordsMiddleware',    'django.contrib.sessions.middleware.SessionMiddleware',
+   'chats.middleware.OffensiveLanguageMiddleware',    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
