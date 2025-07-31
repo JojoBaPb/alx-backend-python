@@ -11,6 +11,14 @@ class Message(models.Model):
     def __str__(self):
         return f'Message from {self.sender} to {self.receiver}'
 
+class MessageHistory(models.Model):
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    old_content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'History for {self.message}'
+
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
