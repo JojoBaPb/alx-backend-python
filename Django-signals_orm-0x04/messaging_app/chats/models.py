@@ -37,17 +37,7 @@ class Conversation(models.Model):
     def __str__(self):
         return f"Conversation {self.conversation_id}"
 
-# Message Model
-class Message(models.Model):
-    message_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages_sent')
-    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
-    message_body = models.TextField()
-    sent_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Message from {self.sender} at {self.sent_at}"
-
+# Message Model        
 class Message(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
