@@ -19,3 +19,10 @@ def log_message_edit(sender, instance, **kwargs):
             instance.edited = True  # Mark the message as edited
     except Message.DoesNotExist:
         pass  # No original message, likely a new message
+
+@receiver(post_delete, sender=User)
+def delete_user_related_data(sender, instance, **kwargs):
+    Message.objects.filter(sender=instance).delete()
+    Message.objects.filter(receiver=instance).delete()
+    Notification.objects.filter(user=instance).delete()
+    MessageHistory.objects.filter(edited_by=instance).delete()
