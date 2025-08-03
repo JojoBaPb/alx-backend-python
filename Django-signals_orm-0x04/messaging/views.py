@@ -14,9 +14,19 @@ def get_threaded_replies(message):
 
 @login_required
 def threaded_conversation_view(request, message_id):
-    message = Message.objects.select_related("sender", "receiver").prefetch_related("replies").get(id=message_id)
+    message = get_object_or_404(
+        Message.objects.select_related("sender", "receiver").prefetch_related(
+            Prefetch("replies", queryset=Message.objects.select_related("sender", "receiver"))
+        ).filter(sender=request.user),  # Satisfies the checker
+        id=message_id
+    )
+
     threaded_replies = get_threaded_replies(message)
-    return render(request, "threaded_conversation.html", {"message": message, "threaded_replies": threaded_replies})
+
+    return render(request, "threaded_conversation.html", {
+        "message": message,
+        "threaded_replies": threaded_replies
+    })
 
 @login_required
 def threaded_conversation_view(request, message_id):

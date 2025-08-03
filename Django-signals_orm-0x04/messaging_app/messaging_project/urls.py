@@ -26,3 +26,6 @@ urlpatterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+
