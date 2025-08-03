@@ -7,6 +7,17 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+ parent_message = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='replies'
+    )
+
+    def __str__(self):
+        return f"{self.sender.username}: {self.content[:30]}"
+
     # NEW FIELDS
     edited_at = models.DateTimeField(null=True, blank=True)
     edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='edited_messages')
