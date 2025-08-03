@@ -12,6 +12,15 @@ def get_threaded_replies(message):
         replies.append({"message": reply, "replies": nested})
     return replies
 
+def get_threaded_replies(message):
+    replies = Message.objects.filter(parent=message).select_related("sender", "receiver")
+    threaded = []
+    for reply in replies:
+        nested = get_threaded_replies(reply)
+        threaded.append({"message": reply, "replies": nested})
+    return threaded
+
+
 @login_required
 def threaded_conversation_view(request, message_id):
     message = get_object_or_404(
