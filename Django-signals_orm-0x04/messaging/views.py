@@ -20,6 +20,10 @@ def get_threaded_replies(message):
         threaded.append({"message": reply, "replies": nested})
     return threaded
 
+@login_required
+def unread_messages_view(request):
+    unread_msgs = Message.unread.for_user(request.user)
+    return render(request, "unread_messages.html", {"unread_messages": unread_msgs})
 
 @login_required
 def threaded_conversation_view(request, message_id):
