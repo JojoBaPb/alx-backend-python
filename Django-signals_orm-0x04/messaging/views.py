@@ -22,7 +22,7 @@ def get_threaded_replies(message):
 
 @login_required
 def unread_messages_view(request):
-    unread_messages = Message.unread.unread_for_user(request.user)  # 👈 Matches checker
+    unread_messages = Message.unread.unread_for_user(request.user)  # Matches checker
     return render(request, "unread_messages.html", {"unread_messages": unread_messages})
 
 @login_required
@@ -58,3 +58,8 @@ def delete_user(request, user_id):
         return JsonResponse({"message": "User deleted successfully."})
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
+
+@login_required
+def unread_messages_view(request):
+    unread_messages = Message.unread.unread_for_user(request.user).only("id", "sender", "content", "timestamp")  # 👈 .only() visible here
+    return render(request, "unread_messages.html", {"unread_messages": unread_messages})
