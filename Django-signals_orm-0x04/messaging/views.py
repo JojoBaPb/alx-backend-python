@@ -61,5 +61,12 @@ def delete_user(request, user_id):
 
 @login_required
 def unread_messages_view(request):
-    unread_messages = Message.unread.unread_for_user(request.user).only("id", "sender", "content", "timestamp")  # 👈 .only() visible here
+    unread_messages = Message.unread.unread_for_user(request.user).only("id", "sender", "content", "timestamp")  # .only() visible here
     return render(request, "unread_messages.html", {"unread_messages": unread_messages})
+
+@cache_page(60)  # Caches for 60 seconds
+@login_required
+def conversation_messages(request, conversation_id):
+    messages = Message.objects.filter(conversation_id=conversation_id)
+    return render(request, "conversation_messages.html", {"messages": messages})
+
