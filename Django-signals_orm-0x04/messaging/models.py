@@ -6,8 +6,9 @@ class Message(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-
- parent_message = models.ForeignKey(
+    read = models.BooleanField(default=False)
+    
+    parent_message = models.ForeignKey(
         'self',
         null=True,
         blank=True,
@@ -15,8 +16,17 @@ class Message(models.Model):
         related_name='replies'
     )
 
+    objects = models.Manager()
+
+    unread = UnreadMessagesManager()
+
     def __str__(self):
         return f"{self.sender.username}: {self.content[:30]}"
+
+class UnreadMessagesManager(models.Manager):
+    def for_user(self, user):
+        return self.get_queryset().filter(receiver=user, read=False).only('id', 'sender', 'content', 'timestamp')
+
 
     # NEW FIELDS
     edited_at = models.DateTimeField(null=True, blank=True)
