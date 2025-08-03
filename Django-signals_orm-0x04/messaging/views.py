@@ -5,6 +5,19 @@ from django.db.models import Prefetch
 from .models import Message
 from django.contrib.auth.decorators import login_required
 
+def get_threaded_replies(message):
+    replies = []
+    for reply in message.replies.all():
+        nested = get_threaded_replies(reply)
+        replies.append({"message": reply, "replies": nested})
+    return replies
+
+@login_required
+def threaded_conversation_view(request, message_id):
+    message = Message.objects.select_related("sender", "receiver").prefetch_related("replies").get(id=message_id)
+    threaded_replies = get_threaded_replies(message)
+    return render(request, "threaded_conversation.html", {"message": message, "threaded_replies": threaded_replies})
+
 @login_required
 def threaded_conversation_view(request, message_id):
     message = Message.objects.select_related("sender", "receiver").prefetch_related("replies").get(id=message_id)
