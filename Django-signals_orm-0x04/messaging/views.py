@@ -22,8 +22,8 @@ def get_threaded_replies(message):
 
 @login_required
 def unread_messages_view(request):
-    unread_msgs = Message.unread.for_user(request.user)
-    return render(request, "unread_messages.html", {"unread_messages": unread_msgs})
+    unread_messages = Message.unread.unread_for_user(request.user)  # 👈 Matches checker
+    return render(request, "unread_messages.html", {"unread_messages": unread_messages})
 
 @login_required
 def threaded_conversation_view(request, message_id):
