@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // ShiningPanda plugin manages Python virtualenvs
-        python 'Python3'
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -17,22 +12,18 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                withPythonEnv('Python3') {
-                    sh '''
-                        pip install --upgrade pip
-                        pip install -r messaging_app/requirements.txt
-                    '''
-                }
+                sh '''
+                    pip3 install --upgrade pip
+                    pip3 install -r messaging_app/requirements.txt
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                withPythonEnv('Python3') {
-                    sh '''
-                        pytest messaging_app/tests --junitxml=report.xml --cov=messaging_app
-                    '''
-                }
+                sh '''
+                    pytest messaging_app/tests --junitxml=report.xml --cov=messaging_app
+                '''
             }
             post {
                 always {
