@@ -43,6 +43,17 @@ jobs:
           pip install -r messaging_app/requirements.txt
           pip install pytest pytest-django pytest-cov
 
+      - name: Run flake8 linting
+        run: |
+          flake8 messaging_app --exit-zero
+
+
       - name: Run tests
         run: |
           pytest messaging_app/tests --ds=messaging_app.settings --junitxml=pytest-report.xml --cov=messaging_app
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage.xml
